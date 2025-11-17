@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MobileAccesories — Shop</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* small extras */
+    .glass { background: rgba(255,255,255,0.6); backdrop-filter: blur(6px); }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-slate-100 text-slate-800 antialiased">
+  <!-- NAV -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-4">
+          <a href="#" class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-600 text-white rounded-md flex items-center justify-center font-bold">MA</div>
+            <div class="hidden sm:block">
+              <div class="font-semibold">MobileAccesories</div>
+              <div class="text-xs text-slate-500">Quality accessories — delivered fast</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="flex-1 hidden md:block mx-6">
+          <div class="relative">
+            <input id="searchInput" type="search" placeholder="Search phones, chargers, cases..." class="w-full rounded-md border border-slate-200 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+            <button id="clearSearch" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hidden">✕</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="favoritesBtn" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-100">❤ Favorites</button>
+          <button id="cartBtn" class="relative inline-flex items-center gap-2 px-3 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">
+            🛒 <span id="cartCount" class="ml-1 font-medium">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <section class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div class="lg:col-span-4 bg-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-center gap-6">
+        <div class="flex-1">
+          <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight">Find the perfect mobile accessories</h1>
+          <p class="mt-2 text-slate-600">Chargers, cases, earphones, stands and more — curated for performance and style.</p>
+          <div class="mt-4 flex gap-3">
+            <a href="#products" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md shadow">Shop Bestsellers</a>
+            <a href="#" id="showFilters" class="inline-flex items-center gap-2 px-4 py-2 border rounded-md">Filters</a>
+          </div>
+        </div>
+        <div class="w-56 h-56 bg-gradient-to-tr from-indigo-50 to-pink-50 rounded-xl flex items-center justify-center">
+          <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=0e3d1f4d5a1e3a7c1d5b6f5f3b9f0d2a" alt="mobile accessories" class="w-48 h-48 object-cover rounded-lg shadow">
+        </div>
+      </div>
+
+      <!-- SIDEBAR FILTER (mobile collapsible) -->
+      <aside id="filters" class="hidden lg:block col-span-1">
+        <div class="bg-white rounded-xl p-4 shadow">
+          <h3 class="font-semibold">Filter by</h3>
+          <div class="mt-4 space-y-3">
+            <div>
+              <label class="block text-sm text-slate-600">Category</label>
+              <select id="categorySelect" class="mt-1 w-full border rounded-md p-2">
+                <option value="all">All</option>
+                <option value="chargers">Chargers</option>
+                <option value="cases">Cases</option>
+                <option value="earphones">Earphones</option>
+                <option value="cables">Cables</option>
+                <option value="powerbanks">Powerbanks</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block t
