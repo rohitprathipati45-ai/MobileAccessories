@@ -3,196 +3,103 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MobileAccessories — Products</title>
+  <title>MobileAccessories — Checkout</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root{ --accent:#4f46e5; }
-    .card { transition: transform .18s ease, box-shadow .18s ease; }
-    .card:hover{ transform: translateY(-6px); box-shadow: 0 10px 30px rgba(2,6,23,0.08); }
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(2,6,23,0.5); display:flex; align-items:center; justify-content:center; z-index:60; }
+    .pill { background: rgba(79,70,229,0.08); color: #4f46e5; padding:.2rem .5rem; border-radius:999px; font-weight:600; font-size:.85rem; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
-  <header class="bg-white shadow sticky top-0 z-40">
+  <header class="bg-white shadow">
     <div class="max-w-7xl mx-auto p-4 flex items-center justify-between">
-      <a href="index.html" class="font-semibold">← Home</a>
-      <div class="flex items-center gap-3">
-        <label class="text-sm text-slate-600 mr-2 hidden sm:inline">Category</label>
-        <select id="categorySelect" class="border rounded p-2 text-sm">
-          <option value="all">All</option>
-          <option value="chargers">Chargers</option>
-          <option value="cases">Cases</option>
-          <option value="earphones">Earphones</option>
-          <option value="cables">Cables</option>
-          <option value="powerbanks">Powerbanks</option>
-        </select>
-        <a href="payment.html" id="cartLink" class="bg-indigo-600 text-white px-3 py-2 rounded">Checkout</a>
-      </div>
+      <a href="index.html" class="font-semibold">← Continue shopping</a>
+      <a href="thankyou.html" class="text-sm text-slate-500">Place order (demo)</a>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto p-6">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">All products</h1>
-      <div class="flex items-center gap-3">
-        <input id="mobileSearch" placeholder="Search products..." class="border rounded p-2 text-sm" />
-        <select id="sortSelect" class="border rounded p-2 text-sm">
-          <option value="popular">Sort: Popular</option>
-          <option value="low">Price: Low → High</option>
-          <option value="high">Price: High → Low</option>
+  <main class="max-w-3xl mx-auto p-6 bg-white mt-6 rounded-lg shadow">
+    <h1 class="text-2xl font-bold mb-2">Checkout</h1>
+    <p class="text-sm text-slate-500 mb-4">Complete your purchase. Payment here is demo-only.</p>
+
+    <div id="items" class="space-y-4 mb-6"></div>
+
+    <form id="checkoutForm" class="space-y-4">
+      <div>
+        <label class="block text-sm">Full name</label>
+        <input name="name" required class="w-full border rounded p-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Email</label>
+        <input name="email" type="email" required class="w-full border rounded p-2" />
+      </div>
+      <div>
+        <label class="block text-sm">Address</label>
+        <textarea name="address" required class="w-full border rounded p-2"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm">Payment method (demo)</label>
+        <select name="method" class="w-full border rounded p-2">
+          <option>Card</option>
+          <option>UPI</option>
+          <option>Netbanking</option>
         </select>
       </div>
-    </div>
 
-    <div id="list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+      <div class="flex items-center justify-between">
+        <div class="font-semibold">Total: <span id="total">₹0</span></div>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Pay now (demo)</button>
+      </div>
+    </form>
   </main>
 
-  <!-- product modal mount -->
-  <div id="modalRoot"></div>
-
   <script>
+    // product catalog (price only)
     const PRODUCTS = [
-      { id: 1, title: '65W USB-C Charger', price: 29.99, category: 'chargers', img: 'https://images.unsplash.com/photo-1585386959984-a4155224a6ee?q=80&w=800&auto=format&fit=crop', rating:4.6, description: 'Fast 65W charger with GaN tech — compact and efficient.' },
-      { id: 2, title: 'Clear Shockproof Case', price: 12.49, category: 'cases', img: 'https://images.unsplash.com/photo-1585386959984-a4155224a6ee?q=80&w=800&auto=format&fit=crop', rating:4.2, description: 'TPU clear case with reinforced corners and anti-yellow coating.' },
-      { id: 3, title: 'Wireless Earbuds V2', price: 59.00, category: 'earphones', img: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=800&auto=format&fit=crop', rating:4.7, description: 'Active noise cancellation and 30H playtime.' },
-      { id: 4, title: 'Braided Lightning Cable', price: 7.99, category: 'cables', img: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=800&auto=format&fit=crop', rating:4.3, description: 'Durable braided cable with reinforced connector.' },
-      { id: 5, title: '10,000mAh Powerbank', price: 24.95, category: 'powerbanks', img: 'https://images.unsplash.com/photo-1580894908360-7aa4f9a2f1d0?q=80&w=800&auto=format&fit=crop', rating:4.4, description: 'Slim powerbank with two outputs and fast charge.' },
-      { id: 6, title: 'Magnetic Car Mount', price: 15.50, category: 'stands', img: 'https://images.unsplash.com/photo-1592891720276-b3b2c02a3d6d?q=80&w=800&auto=format&fit=crop', rating:4.1, description: 'Strong magnetic mount with easy one-handed use.' }
+      { id: 1, title: '65W USB-C Charger', price: 29.99 },
+      { id: 2, title: 'Clear Shockproof Case', price: 12.49 },
+      { id: 3, title: 'Wireless Earbuds V2', price: 59.00 },
+      { id: 4, title: 'Braided Lightning Cable', price: 7.99 },
+      { id: 5, title: '10,000mAh Powerbank', price: 24.95 },
+      { id: 6, title: 'Magnetic Car Mount', price: 15.50 }
     ];
-
+    function getProduct(id){ return PRODUCTS.find(p=>p.id===Number(id)); }
     function asINR(num){ return '₹' + Number(num).toFixed(0); }
-    const list = document.getElementById('list');
-    const cat = document.getElementById('categorySelect');
-    const mobileSearch = document.getElementById('mobileSearch');
-    const sortSelect = document.getElementById('sortSelect');
 
-    function render(products){
-      list.innerHTML = '';
-      products.forEach(p => {
-        const node = document.createElement('article');
-        node.className = 'bg-white rounded-xl p-4 shadow card';
-        node.innerHTML = `
-          <a class="block rounded-lg overflow-hidden" data-id="${p.id}">
-            <div class="w-full h-44 bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center">
-              <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
-            </div>
-          </a>
-          <div class="mt-3">
-            <div class="font-medium">${p.title}</div>
-            <div class="text-sm text-slate-500 mt-1">${p.rating} ⭐ • ${p.category}</div>
-            <div class="mt-3 flex items-center justify-between">
-              <div class="font-semibold">${asINR(p.price*82)}</div>
-              <div class="flex gap-2">
-                <button class="px-3 py-1 bg-indigo-600 text-white rounded buy-now" data-id="${p.id}">Buy</button>
-                <button class="px-3 py-1 border rounded add-to-cart" data-id="${p.id}">Add</button>
-              </div>
-            </div>
-          </div>
-        `;
-        list.appendChild(node);
-      });
-
-      // interactions
-      document.querySelectorAll('[data-id]').forEach(el => el.addEventListener('click', (e) => {
-        // only open modal when clicked on card (not add/buy buttons)
-        if(e.target.closest('.add-to-cart') || e.target.closest('.buy-now')) return;
-        const id = e.currentTarget.closest('[data-id]')?.dataset?.id || e.currentTarget.dataset.id;
-        if(id) showProductModal(Number(id));
-      }));
-      document.querySelectorAll('.add-to-cart').forEach(b=> b.addEventListener('click', (e)=> {
-        e.stopPropagation();
-        addToCart(Number(e.currentTarget.dataset.id));
-      }));
-      document.querySelectorAll('.buy-now').forEach(b=> b.addEventListener('click', (e)=> {
-        const id = Number(e.currentTarget.dataset.id);
-        location.href = `payment.html?productId=${id}`;
-      }));
-    }
-
-    function getSorted(mode, list){
-      const copy = [...list];
-      if(mode === 'low') return copy.sort((a,b)=> a.price - b.price);
-      if(mode === 'high') return copy.sort((a,b)=> b.price - a.price);
-      return copy;
-    }
-
-    // Filter/sort/search behavior
-    function updateList(){
-      const v = cat.value;
-      const q = (mobileSearch.value||'').toLowerCase();
-      let filtered = PRODUCTS;
-      if(v !== 'all') filtered = filtered.filter(p => p.category === v);
-      if(q) filtered = filtered.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
-      const sorted = getSorted(sortSelect.value, filtered);
-      render(sorted);
-    }
-
-    cat.addEventListener('change', updateList);
-    mobileSearch.addEventListener('input', updateList);
-    sortSelect.addEventListener('change', updateList);
-
-    // Simple cart functions (duplicate of index logic for independence)
-    function readCart(){ return JSON.parse(localStorage.getItem('cart')||'[]'); }
-    function writeCart(cart){ localStorage.setItem('cart', JSON.stringify(cart)); showSmallToast('Cart updated'); }
-
-    function addToCart(id){
-      const cart = readCart();
-      const existing = cart.find(x => x.productId === id);
-      if(existing) existing.qty += 1;
-      else cart.push({ productId: id, qty: 1 });
-      writeCart(cart);
-    }
-
-    // Product Modal
-    const modalRoot = document.getElementById('modalRoot');
-    function showProductModal(id){
-      const p = PRODUCTS.find(x => x.id === id);
-      if(!p) return;
-      const modal = document.createElement('div');
-      modal.className = 'modal-backdrop';
-      modal.innerHTML = `
-        <div class="bg-white rounded-xl max-w-3xl w-full p-6 shadow-lg">
-          <div class="flex gap-6">
-            <div class="w-1/3 hidden sm:block"><img src="${p.img}" class="w-full h-56 object-cover rounded" /></div>
-            <div class="flex-1">
-              <div class="flex items-start justify-between">
-                <h2 class="text-xl font-bold">${p.title}</h2>
-                <button id="closeModal" class="text-slate-600">✕</button>
-              </div>
-              <div class="text-sm text-slate-500 mt-2">${p.rating} ⭐ • ${p.category}</div>
-              <div class="mt-4 text-slate-700">${p.description}</div>
-              <div class="mt-4 font-semibold text-lg">${asINR(p.price*82)}</div>
-              <div class="mt-6 flex gap-3">
-                <button id="modalAdd" class="px-4 py-2 bg-indigo-600 text-white rounded">Add to cart</button>
-                <a href="payment.html?productId=${p.id}" class="px-4 py-2 border rounded">Buy now</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      modalRoot.appendChild(modal);
-      modal.querySelector('#closeModal').addEventListener('click', ()=> { modal.remove(); history.replaceState(null,'','products.html'); });
-      modal.querySelector('#modalAdd').addEventListener('click', ()=> { addToCart(p.id); modal.remove(); });
-      // push query for back/refresh friendliness
-      history.replaceState(null, '', `products.html?id=${p.id}`);
-    }
-
-    // small toast for product page
-    function showSmallToast(msg='Saved'){
-      const t = document.createElement('div');
-      t.className = 'fixed right-6 bottom-6 bg-black text-white px-4 py-2 rounded shadow';
-      t.textContent = msg;
-      document.body.appendChild(t);
-      setTimeout(()=> t.remove(), 1400);
-    }
-
-    // initial
-    updateList();
-
-    // If open with ?id= show modal (deep link)
     const params = new URLSearchParams(location.search);
-    const id = params.get('id');
-    if(id) showProductModal(Number(id));
+    const productId = params.get('productId');
+    let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+    if(productId) cart = [{ productId: Number(productId), qty: 1 }];
+
+    const itemsDiv = document.getElementById('items');
+    let total = 0;
+    if(cart.length === 0){
+      itemsDiv.innerHTML = '<div class="text-slate-600">Your cart is empty. Add items from the <a href="products.html" class="text-indigo-600">products page</a>.</div>';
+    } else {
+      cart.forEach(c => {
+        const p = getProduct(c.productId);
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-4';
+        row.innerHTML = `<div class="w-16 h-16 bg-slate-100 rounded flex items-center justify-center">${p.title.split(' ')[0]}</div>
+          <div class="flex-1">
+            <div class="font-medium">${p.title}</div>
+            <div class="text-sm text-slate-500">Qty: ${c.qty}</div>
+          </div>
+          <div class="font-semibold">${asINR(p.price*82*c.qty)}</div>`;
+        itemsDiv.appendChild(row);
+        total += p.price*c.qty*82;
+      });
+    }
+    document.getElementById('total').textContent = asINR(total.toFixed(0));
+
+    document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      // demo: clear cart and redirect to thank you with order id
+      localStorage.removeItem('cart');
+      const orderId = 'ORD' + Date.now();
+      // Redirect with order id
+      location.href = `thankyou.html?order=${orderId}`;
+    });
   </script>
 </body>
 </html>
