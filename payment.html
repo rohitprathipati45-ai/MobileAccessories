@@ -1,103 +1,116 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MobileAccessories — Checkout</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .pill { background: rgba(79,70,229,0.08); color: #4f46e5; padding:.2rem .5rem; border-radius:999px; font-weight:600; font-size:.85rem; }
+    .pill { background: rgba(14,165,233,0.08); color:#0ea5e9; padding:.2rem .5rem; border-radius:999px; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-  <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto p-4 flex items-center justify-between">
-      <a href="index.html" class="font-semibold">← Continue shopping</a>
-      <a href="thankyou.html" class="text-sm text-slate-500">Place order (demo)</a>
+<body class="bg-gray-50 text-gray-800">
+  <header class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <a href="index.html" class="font-bold">← Continue shopping</a>
+      <a href="thankyou.html" class="text-sm text-gray-500">Place order (demo)</a>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto p-6 bg-white mt-6 rounded-lg shadow">
-    <h1 class="text-2xl font-bold mb-2">Checkout</h1>
-    <p class="text-sm text-slate-500 mb-4">Complete your purchase. Payment here is demo-only.</p>
+  <main class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Checkout</h1>
 
-    <div id="items" class="space-y-4 mb-6"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- billing -->
+      <div class="bg-white p-6 rounded-xl shadow">
+        <form id="checkoutForm" class="space-y-4">
+          <div>
+            <label class="block text-sm">Full name</label>
+            <input name="name" required class="w-full border rounded p-2"/>
+          </div>
+          <div>
+            <label class="block text-sm">Email</label>
+            <input name="email" type="email" required class="w-full border rounded p-2"/>
+          </div>
+          <div>
+            <label class="block text-sm">Address</label>
+            <textarea name="address" required class="w-full border rounded p-2"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm">Payment method</label>
+            <select name="method" class="w-full border rounded p-2">
+              <option>Card</option>
+              <option>UPI</option>
+              <option>Netbanking</option>
+            </select>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <div class="text-sm text-gray-600">Total</div>
+            <div class="font-semibold" id="total">₹0</div>
+          </div>
+          <button type="submit" class="w-full px-4 py-2 bg-[#111827] text-white rounded">Pay (demo)</button>
+        </form>
+      </div>
 
-    <form id="checkoutForm" class="space-y-4">
-      <div>
-        <label class="block text-sm">Full name</label>
-        <input name="name" required class="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label class="block text-sm">Email</label>
-        <input name="email" type="email" required class="w-full border rounded p-2" />
-      </div>
-      <div>
-        <label class="block text-sm">Address</label>
-        <textarea name="address" required class="w-full border rounded p-2"></textarea>
-      </div>
-
-      <div>
-        <label class="block text-sm">Payment method (demo)</label>
-        <select name="method" class="w-full border rounded p-2">
-          <option>Card</option>
-          <option>UPI</option>
-          <option>Netbanking</option>
-        </select>
-      </div>
-
-      <div class="flex items-center justify-between">
-        <div class="font-semibold">Total: <span id="total">₹0</span></div>
-        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Pay now (demo)</button>
-      </div>
-    </form>
+      <!-- order summary -->
+      <aside class="bg-white p-6 rounded-xl shadow">
+        <h3 class="font-semibold mb-4">Order summary</h3>
+        <div id="items" class="space-y-3 mb-4"></div>
+        <div class="flex items-center justify-between text-sm text-gray-600">
+          <div>Subtotal</div><div id="sub">₹0</div>
+        </div>
+        <div class="flex items-center justify-between text-sm text-gray-600 mt-2">
+          <div>Shipping</div><div>₹0</div>
+        </div>
+        <div class="flex items-center justify-between font-bold text-lg mt-4">
+          <div>Total</div><div id="grand">₹0</div>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <script>
-    // product catalog (price only)
+    // local product prices (small catalog copy)
     const PRODUCTS = [
-      { id: 1, title: '65W USB-C Charger', price: 29.99 },
-      { id: 2, title: 'Clear Shockproof Case', price: 12.49 },
-      { id: 3, title: 'Wireless Earbuds V2', price: 59.00 },
-      { id: 4, title: 'Braided Lightning Cable', price: 7.99 },
-      { id: 5, title: '10,000mAh Powerbank', price: 24.95 },
-      { id: 6, title: 'Magnetic Car Mount', price: 15.50 }
+      { id:1, title:'65W USB-C Charger', price:29.99 },
+      { id:2, title:'Clear Shockproof Case', price:12.49 },
+      { id:3, title:'Wireless Earbuds V2', price:59.00 },
+      { id:4, title:'Braided Lightning Cable', price:7.99 },
+      { id:5, title:'10,000mAh Powerbank', price:24.95 },
+      { id:6, title:'Magnetic Car Mount', price:15.50 }
     ];
-    function getProduct(id){ return PRODUCTS.find(p=>p.id===Number(id)); }
-    function asINR(num){ return '₹' + Number(num).toFixed(0); }
+    function inr(v){ return '₹' + Number(v).toFixed(0); }
+    function getProduct(id){ return PRODUCTS.find(p=> p.id === Number(id)) || { title:'Item', price:0 }; }
 
+    // build cart from localStorage or ?productId
     const params = new URLSearchParams(location.search);
     const productId = params.get('productId');
-    let cart = JSON.parse(localStorage.getItem('cart')||'[]');
-    if(productId) cart = [{ productId: Number(productId), qty: 1 }];
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    if(productId){ cart = [{ productId: Number(productId), qty:1 }]; }
 
     const itemsDiv = document.getElementById('items');
-    let total = 0;
+    let subtotal = 0;
     if(cart.length === 0){
-      itemsDiv.innerHTML = '<div class="text-slate-600">Your cart is empty. Add items from the <a href="products.html" class="text-indigo-600">products page</a>.</div>';
+      itemsDiv.innerHTML = '<div class="text-gray-600">Your cart is empty. Add items from products page.</div>';
     } else {
-      cart.forEach(c => {
+      cart.forEach(c=>{
         const p = getProduct(c.productId);
         const row = document.createElement('div');
-        row.className = 'flex items-center gap-4';
-        row.innerHTML = `<div class="w-16 h-16 bg-slate-100 rounded flex items-center justify-center">${p.title.split(' ')[0]}</div>
-          <div class="flex-1">
-            <div class="font-medium">${p.title}</div>
-            <div class="text-sm text-slate-500">Qty: ${c.qty}</div>
-          </div>
-          <div class="font-semibold">${asINR(p.price*82*c.qty)}</div>`;
+        row.className = 'flex items-center justify-between';
+        row.innerHTML = `<div><div class="font-medium">${p.title}</div><div class="text-sm text-gray-500">Qty: ${c.qty}</div></div><div class="font-semibold">${inr(p.price*82*c.qty)}</div>`;
         itemsDiv.appendChild(row);
-        total += p.price*c.qty*82;
+        subtotal += p.price*82*c.qty;
       });
     }
-    document.getElementById('total').textContent = asINR(total.toFixed(0));
+    document.getElementById('sub').textContent = inr(subtotal.toFixed(0));
+    document.getElementById('grand').textContent = inr(subtotal.toFixed(0));
+    document.getElementById('total').textContent = inr(subtotal.toFixed(0));
 
-    document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+    document.getElementById('checkoutForm').addEventListener('submit', e=>{
       e.preventDefault();
-      // demo: clear cart and redirect to thank you with order id
+      // demo flow: clear cart and redirect with order id
       localStorage.removeItem('cart');
       const orderId = 'ORD' + Date.now();
-      // Redirect with order id
       location.href = `thankyou.html?order=${orderId}`;
     });
   </script>
