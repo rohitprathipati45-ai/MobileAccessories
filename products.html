@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MobileAccessories — Products</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto p-4 flex items-center justify-between">
+      <a href="index.html" class="font-semibold">← Back to Home</a>
+      <a href="payment.html" id="cartLink" class="bg-indigo-600 text-white px-3 py-2 rounded">Checkout</a>
+    </div>
+  </header>
+  <main class="max-w-7xl mx-auto p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">Products</h1>
+      <div>
+        <label class="text-sm text-slate-600 mr-2">Category</label>
+        <select id="categorySelect" class="border rounded p-2">
+          <option value="all">All</option>
+          <option value="chargers">Chargers</option>
+          <option value="cases">Cases</option>
+          <option value="earphones">Earphones</option>
+          <option value="cables">Cables</option>
+          <option value="powerbanks">Powerbanks</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+
+    <template id="productTpl">
+      <a class="block bg-white rounded-xl p-4 shadow hover:shadow-lg transition productCard">
+        <div class="w-full h-40 bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center"><img class="w-full h-full object-cover"/></div>
+        <div class="mt-3">
+          <div class="font-medium title"></div>
+          <div class="text-slate-500 text-sm category"></div>
+          <div class="mt-2 font-semibold price"></div>
+        </div>
+      </a>
+    </template>
+  </main>
+
+  <script>
+    // same dataset
+    const PRODUCTS = [
+      { id: 1, title: '65W USB-C Charger', price: 29.99, category: 'chargers', img: 'https://images.unsplash.com/photo-1585386959984-a4155224a6ee?q=80&w=800&auto=format&fit=crop' },
+      { id: 2, title: 'Clear Shockproof Case', price: 12.49, category: 'cases', img: 'https://images.unsplash.com/photo-1585386959984-a4155224a6ee?q=80&w=800&auto=format&fit=crop' },
+      { id: 3, title: 'Wireless Earbuds V2', price: 59.00, category: 'earphones', img: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=800&auto=format&fit=crop' },
+      { id: 4, title: 'Braided Lightning Cable', price: 7.99, category: 'cables', img: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=800&auto=format&fit=crop' },
+      { id: 5, title: '10,000mAh Powerbank', price: 24.95, category: 'powerbanks', img: 'https://images.unsplash.com/photo-1580894908360-7aa4f9a2f1d0?q=80&w=800&auto=format&fit=crop' },
+      { id: 6, title: 'Magnetic Car Mount', price: 15.50, category: 'stands', img: 'https://images.unsplash.com/photo-1592891720276-b3b2c02a3d6d?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const list = document.getElementById('list');
+    const tpl = document.getElementById('productTpl');
+    const cat = document.getElementById('categorySelect');
+
+    function render(products){
+      list.innerHTML = '';
+      products.forEach(p => {
+        const node = tpl.content.cloneNode(true);
+        const anchor = node.querySelector('a');
+        anchor.href = `products.html?id=${p.id}`; // opens modal on same page via query param
+        node.querySelector('img').src = p.img;
+        node.querySelector('.title').textContent = p.title;
+        node.querySelector('.category').textContent = p.category;
+        node.querySelector('.price').textContent = `₹${(p.price*82).toFixed(0)}`;
+        list.appendChild(node);
+      });
+    }
+
+    render(PRODUCTS);
+
+    cat.addEventListener('change', e => {
+      const v = e.target.value;
+      if(v === 'all') render(PRODUCTS);
+      else render(PRODUCTS.filter(p => p.category === v));
+    });
+
+    // If query param id exists, show a quick product detail overlay (simple)
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if(id){
+      const product = PRODUCTS.find(p => String(p.id) === id);
+      if(product){
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black/40 flex items-center justify-center p-4';
+        overlay.innerHTML = `
+          <div class="bg-white rounded-lg max-w-xl w-full p-6">
+            <div class="flex gap-4">
+              <img src="${product.img}" alt="" class="w-40 h-40 object-cover rounded" />
+              <div>
+                <h2 class="text-xl font-bold">${product.title}</h2>
+                <p class="text-slate-600 mt-1">${product.category}</p>
+                <div class="mt-3 font-semibold">₹${(product.price*82).toFixed(0)}</div>
+                <div class="mt-4 flex gap-3">
+                  <button id="addToCart" class="px-4 py-2 bg-indigo-600 text-white rounded">Add to cart</button>
+                  <a href="payment.html?productId=${product.id}" class="px-4 py-2 border rounded">Buy now</a>
+                  <button id="close" class="px-3 py-2 text-slate-600">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#close').addEventListener('click', ()=> {
+          overlay.remove();
+          history.replaceState(null, '', 'products.html'); // remove query param
+        });
+        overlay.querySelector('#addToCart').addEventListener('click', ()=> {
+          const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+          const exists = cart.find(c => c.productId === product.id);
+          if(exists) exists.qty += 1;
+          else cart.push({ productId: product.id, qty: 1 });
+          localStorage.setItem('cart', JSON.stringify(cart));
+          alert('Added to cart');
+          updateCartCount();
+          overlay.remove();
+          history.replaceState(null, '', 'products.html');
+        });
+      }
+    }
+
+    // update cart link count
+    function updateCartCount(){
+      const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+      document.getElementById('cartLink').textContent = `Checkout (${cart.length})`;
+      document.getElementById('cartLink').href = 'payment.html';
+    }
+    updateCartCount();
+  </script>
+</body>
+</html>
