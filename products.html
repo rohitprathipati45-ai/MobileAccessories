@@ -35,7 +35,7 @@
           <option value="low">Price: Low → High</option>
           <option value="high">Price: High → Low</option>
         </select>
-        <a href="payment.html" id="cartLink" class="bg-[#111827] text-white px-3 py-2 rounded">Checkout</a>
+        <a href="https://bespoke-panda-e6c251.netlify.app/payment" id="cartLink" class="bg-[#111827] text-white px-3 py-2 rounded">Checkout</a>
       </div>
     </div>
   </header>
@@ -146,7 +146,7 @@
       }));
       document.querySelectorAll('.buyNow').forEach(b=> b.addEventListener('click', e=>{
         const id = Number(e.currentTarget.dataset.id);
-        location.href = `payment.html?productId=${id}`;
+        location.href = `https://bespoke-panda-e6c251.netlify.app/payment?productId=${id}`;
       }));
     }
 
@@ -170,7 +170,7 @@
               <div class="mt-4 font-semibold">${inr(p.price*82)}</div>
               <div class="mt-6 flex gap-3">
                 <button id="modalAdd" class="px-4 py-2 bg-[#0ea5e9] text-white rounded">Add to cart</button>
-                <a href="payment.html?productId=${p.id}" class="px-4 py-2 border rounded">Buy now</a>
+                <a href="https://bespoke-panda-e6c251.netlify.app/payment?productId=${p.id}" class="px-4 py-2 border rounded">Buy now</a>
               </div>
             </div>
           </div>
